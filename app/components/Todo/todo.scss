@@ -1,0 +1,48 @@
+.todo {
+    &__input {
+        width: 100%;
+    }
+
+    &-header {
+        text-align: center;
+    }
+}
+
+.todo-list {
+    &__wrapper {
+        border: 1px solid red;
+        margin: 10px 0;
+        padding: 5px;
+
+        &.completed {
+            border-color: green;
+        }
+    }
+}
+
+.todo-item {
+    &__wrapper {
+        border: 1px solid black;
+        border-radius: 15px;
+        padding: 10px;
+        margin: 5px;
+    }
+
+    &__text {
+        font-size: 14px;
+        margin: 0;
+    }
+
+    &__action {
+        text-align: right;
+    }
+
+    span {
+        margin: 0 4px;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}
+

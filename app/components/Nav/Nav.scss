@@ -1,13 +1,3 @@
-.navbar {
-    &__wrapper {
-        margin: 0;
-    }
-
-    &__item {
-        list-style-type: none;
-
-        .active {
-            background-color: rbga(138, 155, 168, 0.15) !important;
-        }
-    }
+body {
+    background: white;
 }
