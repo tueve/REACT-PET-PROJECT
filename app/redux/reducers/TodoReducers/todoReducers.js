@@ -40,9 +40,7 @@ export default function todoReducers(state=initialState, action) {
             }
         case 'complete_all':
             return {
-                todos: [
-                    state.todos.map(todo => console.log(todo))
-                ]
+                todos: state.todos.map(todo => (Object.assign({},todo,{completed: true})))
             }
         case 'clear_all':
             return initialState

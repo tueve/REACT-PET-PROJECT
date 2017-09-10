@@ -1,13 +1,18 @@
 import React,{Component} from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import todosAction from '../redux/actions/todosAction'
+import ReactCSSTransitionGroup  from 'react-addons-css-transition-group'
+
+//import actions 
+import todosAction from '../redux/actions/TodoActions/todosAction'
 
 //import css 
 import '../components/Todo/todo.scss'
 
 // import bootstrap component
 import {Button, Col, Row, Modal} from 'react-bootstrap'
+import { bootstrapUtils } from 'react-bootstrap/lib/utils'
+bootstrapUtils.addStyle(Modal, 'custom-todo');
 
 //import child component
 import TodoItemInput from '../components/Todo/TodoItemInput'
@@ -45,35 +50,57 @@ class TodoApp extends Component {
     }
 
     render() {
-        const completedTodo = this.props.todo.todos.filter(todo => todo.completed === true).length
-        const unoCompletedTodo = this.props.todo.todos.filter(todo => todo.completed === false).length
+        const completedList = this.props.todo.todos.filter(todo => todo.completed === true)
+        const todoList = this.props.todo.todos.filter(todo => todo.completed === false)
+        const completedTodo = completedList.length
+        const unoCompletedTodo = todoList.length
+        const todoListWrapper = completedTodo > 0 ? (unoCompletedTodo > 0 ? 6 : 0 ) : 12
+        const displayNone = unoCompletedTodo === 0 ? 'todo-action__item hide' : 'todo-action__item'
 
         return(
             <div>
                 <div className='container'>
                 <h2 className='todo-header'>TODO APP</h2>
+                    <div className='todo-action__wrapper'>
+                        <div className='todo-action__item add'>
+                            <Button bsSize='sm' bsStyle="success" onClick={this.openModalAdd} block>ADD</Button>
+                        </div>
+                        <div className={displayNone}>
+                            <Button bsSize='sm' bsStyle="danger" onClick={()=>this.props.action.clear_all()} block>CLEAR</Button>
+                        </div>
+                        <div className={displayNone}>
+                            <Button bsSize='sm' bsStyle="primary" onClick={()=>this.props.action.complete_all()} block>COMPLETE</Button>
+                        </div>
+                    </div>
                     <Row>
-                        <Col sm ={6}>
-                            <h2>TO DO LIST</h2>
+                        <Col sm ={todoListWrapper}>
+                            { unoCompletedTodo > 0 && <h2 className='todo-title'>TO DO LIST</h2> }
+                            
                             <div className={unoCompletedTodo ? 'todo-list__wrapper' : '' } >
-                                { this.props.todo.todos.filter(todo => todo.completed === false).map(todo => 
-                                    <TodoItem 
-                                        key={todo.id}
-                                        id={todo.id} 
-                                        completed={todo.completed} 
-                                        text={todo.text}
-                                        editHandle = {this.openModalEdit}
-                                        removeHandle = {id => this.props.action.remove_todo(id)}
-                                        completeHandle = {id => this.props.action.complete_todo(id) }
+                                { todoList.map(todo =>
+                                    <ReactCSSTransitionGroup
+                                        transitionName="example"
+                                        transitionAppear={true}
+                                        transitionAppearTimeout={500}
+                                        transitionEnter={false}
+                                        transitionLeave={false}>
+                                        <TodoItem 
+                                            key={todo.id}
+                                            id={todo.id} 
+                                            completed={todo.completed} 
+                                            text={todo.text}
+                                            editHandle = {this.openModalEdit}
+                                            removeHandle = {id => this.props.action.remove_todo(id)}
+                                            completeHandle = {id => this.props.action.complete_todo(id) }
                                         />
+                                    </ReactCSSTransitionGroup>
                                 )}
                             </div>
-                            <Button bsSize='sm' bsStyle="primary" onClick={this.openModalAdd}>add</Button>
                         </Col>
-                        <Col sm ={6}>
-                            <h2>COMPLETED LIST</h2>
+                        <Col sm ={12-todoListWrapper}>
+                            { completedTodo > 0 && <h2 className='todo-title'>COMPLETED LIST</h2> }
                             <div className={completedTodo ? 'todo-list__wrapper completed': ''}>
-                                { this.props.todo.todos.filter(todo => todo.completed === true).map(todo => 
+                                { completedList.map(todo => 
                                     <TodoItem 
                                         key={todo.id}
                                         id={todo.id} 
@@ -92,16 +119,17 @@ class TodoApp extends Component {
                         onHide={this.closeModalAdd}
                         container={this}
                         aria-labelledby="contained-modal-title"
+                        bsStyle ='custom-todo'
                         >
                         <Modal.Header closeButton>
                             <Modal.Title id="contained-modal-title">ADD TODO</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <TodoItemInput getText = {text => this.setState({textTodo: text})}/>
+                            <TodoItemInput getText = {text => this.setState({textTodo: text})} eventKeyPress = {this.addHandle}/>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button  bsSize='sm' onClick={this.addHandle}> ADD</Button>
-                            <Button bsSize='sm' onClick={this.closeModalAdd}>CLOSE</Button>
+                            <Button  bsSize='sm' bsStyle='success' onClick={this.addHandle}> ADD</Button>
+                            <Button bsSize='sm'  bsStyle='warning' onClick={this.closeModalAdd}>CLOSE</Button>
                         </Modal.Footer>
                     </Modal>
                     <Modal
@@ -109,16 +137,17 @@ class TodoApp extends Component {
                         onHide={this.closeModalEdit}
                         container={this}
                         aria-labelledby="contained-modal-title"
+                        bsStyle ='custom-todo'
                         >
                         <Modal.Header closeButton>
                             <Modal.Title id="contained-modal-title">EDIT TODO</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <TodoItemInput getText = {text => this.setState({textEdit: text})} text={this.state.textEdit}/>
+                            <TodoItemInput getText = {text => this.setState({textEdit: text})} text={this.state.textEdit} eventKeyPress = {this.editHandle}/>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button bsSize='sm' onClick={this.editHandle}> DONE</Button>
-                            <Button bsSize='sm' onClick={this.closeModalEdit}>Close</Button>
+                            <Button bsSize='sm' bsStyle='success' onClick={this.editHandle}> DONE</Button>
+                            <Button bsSize='sm' bsStyle='warning' onClick={this.closeModalEdit}>CLOSE</Button>
                         </Modal.Footer>
                     </Modal>
                 </div>

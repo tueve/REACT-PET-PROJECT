@@ -7,10 +7,10 @@ const TodoItem = props => {
     return (
         <div className='todo-item todo-item__wrapper'>
             <Row>
-                <Col xs={12} sm={8}>
+                <Col xs={8}>
                     <h3 className='todo-item__text'>{props.text}</h3>
                 </Col>
-                <Col xs={12} sm={4}>
+                <Col xs={4}>
                     <div className='todo-item__action'>
                         <span className='fa fa-pencil-square-o' onClick = {() => props.editHandle(props.id,props.text)}></span>
                         <span className='fa fa-close' onClick={ () => props.removeHandle(props.id) }></span>

@@ -1,3 +1,9 @@
 h2 {
     color: red;
 }
+
+.modal {
+    &-custom-todo {
+        transform: translateY(75%) !important;
+    }
+}
